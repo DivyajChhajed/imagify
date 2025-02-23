@@ -9,7 +9,7 @@ const BgSlider = () => {
   };
 
   return (
-    <div className="mt-16 sm:mt-20 md:mt-24 lg:mt-28 pb-10 md:py-20 px-4 flex flex-col items-center">
+    <div className="mt-8 sm:mt-16 md:mt-12 lg:mt-10 pb-10 md:py-20 px-4 flex flex-col items-center">
       {/* Title */}
       <h1 className="mb-8 sm:mb-12 text-center text-xl md:text-2xl lg:text-3xl font-bold">
         Remove Background with High Quality & Accuracy

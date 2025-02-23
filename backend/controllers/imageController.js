@@ -49,5 +49,52 @@ const removeBgImage = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+const generateImage = async (req, res) => {
+  try {
+    const { clerkId, prompt } = req.body; // Accept user prompt for image generation
+    const user = await userModel.findOne({ clerkId });
 
-export { removeBgImage };
+    if (!user) {
+      return res.json({ success: false, message: "User Not Found!" });
+    }
+
+    if (user.creditBalance === 0) {
+      return res.json({
+        success: false,
+        message: "No Credit Balance",
+        creditBalance: user.creditBalance,
+      });
+    }
+
+    // Prepare API request to generate an image
+    const { data } = await axios.post(
+      "https://clipdrop-api.co/text-to-image/v1", // Replace with the actual Clipdrop API endpoint
+      { prompt }, // Sending the text prompt for image generation
+      {
+        headers: { "x-api-key": process.env.CD_API_KEY },
+        responseType: "arraybuffer",
+      }
+    );
+
+    // Convert generated image to Base64 format
+    const base64Image = Buffer.from(data, "binary").toString("base64");
+    const resultImage = `data:image/png;base64,${base64Image}`;
+
+    // Deduct one credit after successful image generation
+    await userModel.findByIdAndUpdate(user._id, {
+      creditBalance: user.creditBalance - 1,
+    });
+
+    res.json({
+      success: true,
+      resultImage,
+      creditBalance: user.creditBalance - 1,
+      message: "Image Generated Successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { removeBgImage, generateImage };

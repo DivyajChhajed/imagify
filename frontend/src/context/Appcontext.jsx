@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export const Appcontext = createContext();
+
 const AppcontextProvider = (props) => {
   const [credit, setCredit] = useState(false);
   const [image, setImage] = useState(false);
@@ -12,8 +13,9 @@ const AppcontextProvider = (props) => {
   const backendUrl = import.meta.env.VITE_BACKENT_URL;
   const { getToken } = useAuth();
   const { isSignedIn } = useUser();
-  const { openSignedIn } = useClerk();
+  const { redirectToSignUp } = useClerk();
   const navigate = useNavigate();
+
   const loadCreditsData = async () => {
     try {
       const token = await getToken();
@@ -33,7 +35,7 @@ const AppcontextProvider = (props) => {
   const removeBg = async (image) => {
     try {
       if (!isSignedIn) {
-        return openSignedIn();
+        return redirectToSignUp();
       }
       setImage(image);
       setResultImage(false);
@@ -61,6 +63,36 @@ const AppcontextProvider = (props) => {
       toast.error(error.message);
     }
   };
+
+  const generateImage = async (prompt) => {
+    try {
+      if (!isSignedIn) {
+        return redirectToSignUp();
+      }
+      navigate("/generate"); // Redirect to /generate page
+      const token = await getToken();
+      const { data } = await axios.post(
+        `${backendUrl}/api/image/generate-image`,
+        { prompt },
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        setResultImage(data.resultImage);
+        data.creditBalance && setCredit(data.creditBalance);
+      } else {
+        toast.error(data.message);
+        data.creditBalance && setCredit(data.creditBalance);
+        if (data.creditBalance === 0) {
+          navigate("/buycredit");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   const value = {
     credit,
     setCredit,
@@ -69,9 +101,11 @@ const AppcontextProvider = (props) => {
     image,
     setImage,
     removeBg,
+    generateImage, // Added generateImage function
     resultImage,
     setResultImage,
   };
+
   return (
     <Appcontext.Provider value={value}>{props.children}</Appcontext.Provider>
   );
