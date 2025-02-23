@@ -1,2 +1,4 @@
 node_modules
-.env
+# Ignore environment variables in both frontend and backend
+frontend/.env
+backend/.env
