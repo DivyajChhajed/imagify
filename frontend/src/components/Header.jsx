@@ -33,7 +33,6 @@ const Header = () => {
           className="flex items-center cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full py-3 px-6 text-lg font-semibold transition-transform transform hover:scale-105 shadow-md"
         >
           <input
-            onClick={() => navigate("/result")}
             onChange={(e) => removeBg(e.target.files[0])}
             type="file"
             accept="image/*"
