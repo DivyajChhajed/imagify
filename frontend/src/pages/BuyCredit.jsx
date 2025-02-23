@@ -76,7 +76,7 @@ const ButCredit = () => {
             <p className="mt-3 text-2xl font-semibold">{item.id}</p>
             <p className="text-sm">{item.desc}</p>
             <p className="mt-4">
-              <span className="text-3xl font-semibold">${item.price}</span>/
+              <span className="text-3xl font-semibold">₹{item.price}</span>/
               {item.credits} credits
             </p>
             <button
